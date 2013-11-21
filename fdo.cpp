@@ -14,6 +14,8 @@ using namespace std;
 using namespace llvm;
 
 
+//This is a comment
+
 namespace {
 	struct fdo :public ModulePass {
 		static char ID ;
