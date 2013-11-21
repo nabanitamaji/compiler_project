@@ -7,6 +7,7 @@
 #include "llvm/Support/CallSite.h"
 #include "llvm/Transforms/IPO/InlinerPass.h"
 #include "llvm/Support/raw_ostream.h"
+#include "llvm/ADT/StringRef.h"
 
 using namespace llvm;
 
@@ -24,10 +25,14 @@ namespace {
 
 	InlineCost MyInliner::getInlineCost(CallSite cs) {
 		errs()<<"Inline Cost Threshold is : "<<getInlineThreshold(cs)<<"\n";
-		//CallInst *callInst = reinterpret_cast<CallInst*>(cs.getInstruction());
 		Function *callee = cs.getCalledFunction();
+		StringRef f("f1");
 		errs()<<"Caller  function " <<callee->getName()<<"\n";
-		return ICA->getInlineCost(cs,getInlineThreshold(cs));
+		if(callee->getName() == f) {
+		//return ICA->getInlineCost(cs,getInlineThreshold(cs));
+			return InlineCost::getAlways();
+		}
+		return InlineCost::getNever();
 	}
 
 	bool MyInliner::runOnSCC(CallGraphSCC &scc) {
@@ -39,6 +44,8 @@ namespace {
 		AU.addRequired<InlineCostAnalysis>() ;
 		Inliner::getAnalysisUsage(AU);
 	}
+
+
 
 }
 
