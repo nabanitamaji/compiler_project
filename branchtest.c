@@ -1,8 +1,12 @@
 #include <stdio.h>
 
+void f2(int );
+void f3();
+ 
 void f1(int i ,int j) {
 	if(i < j) {
 		i = 100+i;
+		f2(i);
 	}else if(i == j) {
 		j = i+j;
 		f2(j);
@@ -27,11 +31,11 @@ void f3() {
 
 
 int main() {
-	int i  = 200 ;
-	int j = 234;
-	for(int p = 0 ; p< j ;++p) {
+	int i  = 2 ;
+	int j = 234,p;
+	for(p = 0 ; p< j ;++p) {
 		if( i < j) {
-			p = i;
+			j = i+p;
 			f1(p,j);
 		}		
 	}
