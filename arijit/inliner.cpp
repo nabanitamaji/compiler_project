@@ -7,11 +7,7 @@
 #include "llvm/Support/CallSite.h"
 #include "llvm/Transforms/IPO/InlinerPass.h"
 
-
-
-
 using namespace llvm;
-
 
 namespace {
 	class MyInliner:public Inliner {
@@ -19,8 +15,14 @@ namespace {
 			static char ID;
 			InlineCostAnalyzer *ICA;
 			MyInliner():Inliner(ID),ICA(0){} 	
+  			virtual InlineCost getInlineCost(CallSite CS);
 			virtual bool runOnSCC(CallGraphSCC &scc);
 	};
+}
+
+InlineCost MyInliner::getInlineCost(CallSite cs) {
+	errs()<<"Inline Cost Threshold is : "<<getInlineThreshold(cs)<<"\n";
+	return ICA->getInlineCost(cs,getInlineThreshold(cs));
 }
 
 bool MyInliner::runOnSCC(CallGraphSCC &scc) {
