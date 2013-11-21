@@ -9,6 +9,8 @@
 #include "llvm/Support/CallSite.h"
 #include "llvm/InstrTypes.h"
 #include <string>
+#include <fstream>
+#include <sstream>
 
 using namespace std;
 using namespace llvm;
@@ -26,7 +28,8 @@ namespace {
 		void CG_initiate();
 		int get_index(const char*);
 		void CG_add(const char*,const char*);
-	};
+		void CG_Dump();
+	};                                                                                               
  
 }
 
@@ -113,10 +116,28 @@ void fdo::CG_add(const char* from, const char *to)
 	errs()<<"\n------------------\n";	*/
 }
 
-void fdo::CG_dump()
+void fdo::CG_Dump()
 {
-		
-	
+	const string fileName = "static_callgraph_state";
+        ofstream file;
+	file.open(fileName.c_str());
+	if(file.is_open()) {
+		for(int i  = 0 ; i < fcntr; ++i ) {   
+			file<<function_name_list[i]<<"\t";
+		}       	
+		file<<"\n";
+		for(int i  = 0 ; i < fcntr; ++i ) {
+                           file<<function_size_list[i] <<"\t";
+		}       	
+		file<<"\n";
+		for(int i  = 0 ; i < fcntr; ++i ) {
+			for(int j = 0 ; j< fcntr; ++j) {
+                           file<<callGraph[i][j]<<"\t";
+			}
+			file<<"\n";
+		}       	
+		file.close();
+	}
 }
 
 bool fdo::traverseFunction(Function *F) {
