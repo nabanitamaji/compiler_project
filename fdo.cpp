@@ -35,18 +35,21 @@ namespace {
 
 bool fdo::runOnModule(Module &M)
 {
-	int  i;
+	int i;
 	fcntr=0;
-	for (Module::iterator I = M.begin(), E = M.end(); I != E; ++I)	
-		fcntr++;
+	for (Module::iterator I = M.begin(), E = M.end(); I != E; ++I){
+		Function *F=&*I;
+		if(F->getName()!="nabanita_profile" && F->size() > 0)
+			fcntr++;
+	}
 	function_name_list=(const char **)malloc(fcntr*sizeof(char *));
 	function_size_list=(int *)malloc(fcntr*sizeof(int));
 	i=0;
 	for (Module::iterator I = M.begin(), E = M.end(); I != E; ++I,++i)	
 	{
 		Function *F=&*I;
-		if(F->getName()=="nabanita_profile"){
-			fcntr--;
+		if(F->getName()=="nabanita_profile" || F->size() <= 0){
+			--i;
 			continue;
 		}
 		function_name_list[i]=F->getName().data();
@@ -59,7 +62,7 @@ bool fdo::runOnModule(Module &M)
 		traverseFunction(F);
 	}
 	CG_Dump();
-				
+	return false;			
 }
 
 void fdo::CG_initiate()
@@ -104,6 +107,8 @@ void fdo::CG_add(const char* from, const char *to)
 	int row, col;
 	row=get_index(from);
 	col=get_index(to);
+	if(row==-1 || col == -1)
+		return;
 	callgraph[row][col]+=1;
 /*	for(i=0;i<fcntr;i++)
 		errs()<<" "<<i<<":"<<function_name_list[i]<<":"<<function_size_list[i];
@@ -145,7 +150,7 @@ void fdo::CG_Dump()
 }
 
 bool fdo::traverseFunction(Function *F) {
-	if (F->getName()=="nabanita_profile") return false;
+	if (F->getName()=="nabanita_profile" || F->size()<=0) return false;
 		const char * from=F->getName().data();
 	const char * to;
 	Module *M =F->getParent();
