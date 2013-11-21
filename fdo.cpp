@@ -58,6 +58,7 @@ bool fdo::runOnModule(Module &M)
 		Function *F=&*I;
 		traverseFunction(F);
 	}
+	CG_Dump();
 				
 }
 
@@ -100,7 +101,7 @@ int fdo::get_index(const char* fname)
 
 void fdo::CG_add(const char* from, const char *to)
 {
-	int row, col,i,j;
+	int row, col;
 	row=get_index(from);
 	col=get_index(to);
 	callgraph[row][col]+=1;
@@ -126,16 +127,19 @@ void fdo::CG_Dump()
 			file<<function_name_list[i]<<"\t";
 		}       	
 		file<<"\n";
+		file<<"\n";
 		for(int i  = 0 ; i < fcntr; ++i ) {
                            file<<function_size_list[i] <<"\t";
 		}       	
 		file<<"\n";
+		file<<"\n";
 		for(int i  = 0 ; i < fcntr; ++i ) {
 			for(int j = 0 ; j< fcntr; ++j) {
-                           file<<callGraph[i][j]<<"\t";
+                           file<<callgraph[i][j]<<"\t";
 			}
 			file<<"\n";
 		}       	
+		file<<"\n";
 		file.close();
 	}
 }
