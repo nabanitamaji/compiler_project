@@ -1,4 +1,4 @@
-LEVEL=../../../../../../
+LEVEL=../../../../
 LIBRARYNAME=Inl
 LOADABLE_MODULE=1
 ENABLE_OPTIMIZE=0
