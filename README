@@ -1,2 +1,2 @@
-This the Compiler Course project. 
-Arijit is testing his commit.
+This is LLVM compiler project which mostly focuses on the optimal inline factors. The existing inline is based on the heuristic.
+Our optimal result is focued to beat the heuristic.
