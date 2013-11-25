@@ -28,6 +28,9 @@ namespace {
 	InlineCost MyInliner::alwaysInline(CallSite CS) {
 		Function *Callee = CS.getCalledFunction();
 		if(Callee && !Callee->isDeclaration() &&
+				Callee->getAttributes().hasAttribute(
+					AttributeSet::FunctionIndex,
+					Attribute::AlwaysInline)  &&
 			       // Callee->getAttributes()
 			       ICA->isInlineViable(*Callee)) {
 			errs()<<"Function that is being inlined "<<Callee->getName()<<"\n";

@@ -25,4 +25,9 @@ then
 elif [ $1 = "clean" ]
 then 
 	echo "There is nothing to clean"
+
+elif [ $1 = "arijit" ]
+then
+	clang  -emit-llvm -c arijit.c -o arijit.bc
+	opt -load $llvm_lib/Inl.so -ml <arijit.bc> output.bc
 fi
