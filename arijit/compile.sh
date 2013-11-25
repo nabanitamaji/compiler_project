@@ -1,14 +1,28 @@
 #!/bin/bash
 
-if [ $# == 1 ]
+if [ $# -ne 1 ]
 then
-	command=$1
-	if [ $command == 'dis' ]
-	then
-          	llvm-dis output.bc
-	fi
-else
-	clang  -emit-llvm -c branchtest.c  -o branchtest.bc
-	opt -load ../../../../Debug+Asserts/lib/Inl.so  -ml <branchtest.bc>output.bc
+	echo "Please eneter the option"
+	exit -1
 fi
+llvm_lib=/home/arijit/llvm/latest/llvm/Debug+Asserts/lib
 
+if [ $1 == "comp" ]
+then 
+	make
+	opt -load $llvm_lib/Inl.so -ml <jpeg-6a.bc> output.bc
+
+elif [ $1 = "jpeg" ]
+then
+	opt -load $llvm_lib/Inl.so -ml <jpeg-6a.bc> output.bc
+	lli output.bc -dct int -progressive -opt ./testimg.ppm > jpeg.out
+
+elif [ $1 = "mpeg" ]
+then
+	opt -load $llvm_lib/Inl.so -ml <jpeg-6a.bc> output.bc
+	lli output.bc -b  ./input_base_4CIF_96bps.mpg -r -f -o0 ./tmp%d
+
+elif [ $1 = "clean" ]
+then 
+	echo "There is nothing to clean"
+fi
