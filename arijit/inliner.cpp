@@ -40,7 +40,9 @@ namespace {
 	}
 
 	InlineCost MyInliner::getInlineCost(CallSite cs) {
-		return alwaysInline(cs);
+                InlineCost iCost = alwaysInline(cs);
+		errs() <<"The value of the icost : "<<iCost.isAlways()<<"\n";
+		return iCost;
 		/**
 		 * This function is the one written in always inline function
 		 */

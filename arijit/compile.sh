@@ -24,7 +24,10 @@ then
 
 elif [ $1 = "clean" ]
 then 
-	echo "There is nothing to clean"
+	echo "There are certain things to clean"
+	rm *.ll
+	rm output*
+	rm *out*
 
 elif [ $1 = "arijit" ]
 then
