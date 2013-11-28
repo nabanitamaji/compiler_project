@@ -28,11 +28,11 @@ namespace {
 	InlineCost MyInliner::alwaysInline(CallSite CS) {
 		Function *Callee = CS.getCalledFunction();
 		if(Callee && !Callee->isDeclaration() &&
-			       // Callee->getAttributes().hasAttribute(
-			       // 	AttributeSet::FunctionIndex,
-			       // 	Attribute::AlwaysInline)  &&
-			       // Callee->getAttributes()
-			       ICA->isInlineViable(*Callee)) {
+			         Callee->getAttributes().hasAttribute(
+			        	AttributeSet::FunctionIndex,
+			        	Attribute::AlwaysInline)  &&
+			       // Callee->getAttributes() &&
+			        ICA->isInlineViable(*Callee)) {
 			errs()<<"Function that is being inlined "<<Callee->getName()<<"\n";
 			return InlineCost::getAlways();
 		}
@@ -40,9 +40,16 @@ namespace {
 	}
 
 	InlineCost MyInliner::getInlineCost(CallSite cs) {
-                InlineCost iCost = alwaysInline(cs);
-		errs() <<"The value of the icost : "<<iCost.isAlways()<<"\n";
-		return iCost;
+                InlineCost iCost1 = alwaysInline(cs);
+		InlineCost iCost2 = ICA->getInlineCost(cs,getInlineThreshold(cs));
+		errs() <<"The value of the icost1 : "<<iCost1.isAlways()<<"\n";
+		errs() <<"The value of the icost2 : "<<iCost2.isAlways()<<"\n";
+		if(iCost1.isAlways() && iCost2.isAlways()) {
+			return iCost1;
+		} else {
+			return iCost2;
+		}
+		
 		/**
 		 * This function is the one written in always inline function
 		 */

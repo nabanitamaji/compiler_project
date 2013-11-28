@@ -1,6 +1,17 @@
-#include <stdio.h>
+#include <cstdio>
+#include <iostream>
+using namespace std;
 
-void testFunction() {
+class Base {
+	public:
+		inline void test();
+};
+
+void Base::test() {
+	cout<<"Name of the function "<<__func__<<endl;
+}
+
+inline void testFunction() {
 	int i = 0 ; 
 	for(; i < 100;++i) {
 		i = i+10;
