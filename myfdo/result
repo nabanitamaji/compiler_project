@@ -1,0 +1,27 @@
+llvm[0]: Compiling fdo.cpp for Debug+Asserts build (PIC)
+fdo.cpp:45:24: error: no matching function for call to 'CreatePointerCast'
+                                        argList.push_back(CastInst::CreatePointerCast(callerNameValue,ptr,"callerCast",*Instruction));
+                                                          ^~~~~~~~~~~~~~~~~~~~~~~~~~~
+/home/ari/Compiler/llvm-3.2.src/include/llvm/IR/InstrTypes.h:471:20: note: candidate function not viable: no known conversion from 'llvm::Instruction' to 'llvm::Instruction *' for 4th argument; remove *
+  static CastInst *CreatePointerCast(
+                   ^
+/home/ari/Compiler/llvm-3.2.src/include/llvm/IR/InstrTypes.h:463:20: note: candidate function not viable: no known conversion from 'llvm::Instruction' to 'llvm::BasicBlock *' for 4th argument
+  static CastInst *CreatePointerCast(
+                   ^
+fdo.cpp:46:24: error: no matching function for call to 'CreatePointerCast'
+                                        argList.push_back(CastInst::CreatePointerCast(calleeNameValue,ptr,"calleeCast",*Instruction));
+                                                          ^~~~~~~~~~~~~~~~~~~~~~~~~~~
+/home/ari/Compiler/llvm-3.2.src/include/llvm/IR/InstrTypes.h:471:20: note: candidate function not viable: no known conversion from 'llvm::Instruction' to 'llvm::Instruction *' for 4th argument; remove *
+  static CastInst *CreatePointerCast(
+                   ^
+/home/ari/Compiler/llvm-3.2.src/include/llvm/IR/InstrTypes.h:463:20: note: candidate function not viable: no known conversion from 'llvm::Instruction' to 'llvm::BasicBlock *' for 4th argument
+  static CastInst *CreatePointerCast(
+                   ^
+fdo.cpp:47:19: error: use of undeclared identifier 'hookInstr'
+                                        Instruction *hookInstr = CallInst::Create(fdoHookFunction,argList);
+                                                     ^
+fdo.cpp:48:6: error: use of undeclared identifier 'hookInstr'
+                                        hookInstr->insertAfter(*Instruction);
+                                        ^
+4 errors generated.
+make: *** [/home/ari/Compiler/llvm-3.2.src/lib/Transforms/compiler_project/myfdo/Debug+Asserts/fdo.o] Error 1
