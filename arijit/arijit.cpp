@@ -1,6 +1,6 @@
 #include <stdio.h>
 
-void testFunction() {
+inline void testFunction() {
 	int i = 0 ; 
 	for(; i < 100;++i) {
 		i = i+10;
