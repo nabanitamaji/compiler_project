@@ -1,13 +1,13 @@
 #include "llvm/Pass.h"
 #include <stdio.h> 
-#include "llvm/Function.h"
-#include "llvm/Module.h"
-#include "llvm/Instructions.h"
+#include "llvm/IR/Function.h"
+#include "llvm/IR/Module.h"
+#include "llvm/IR/Instructions.h"
 #include "llvm/Support/raw_ostream.h"
-#include "llvm/GlobalVariable.h"
-#include "llvm/Constants.h"
+#include "llvm/IR/GlobalVariable.h"
+#include "llvm/IR/Constants.h"
 #include "llvm/Support/CallSite.h"
-#include "llvm/InstrTypes.h"
+#include "llvm/IR/InstrTypes.h"
 #include <string>
 #include <fstream>
 #include <sstream>
@@ -39,7 +39,7 @@ bool fdo::runOnModule(Module &M)
 	fcntr=0;
 	for (Module::iterator I = M.begin(), E = M.end(); I != E; ++I){
 		Function *F=&*I;
-		if(F->getName()!="nabanita_profile" && F->size() > 0)
+		if(F->getName()!="gen_profile" && F->getName()!="profile_dump" && F->size() > 0)
 			fcntr++;
 	}
 	function_name_list=(const char **)malloc(fcntr*sizeof(char *));
@@ -48,7 +48,7 @@ bool fdo::runOnModule(Module &M)
 	for (Module::iterator I = M.begin(), E = M.end(); I != E; ++I,++i)	
 	{
 		Function *F=&*I;
-		if(F->getName()=="nabanita_profile" || F->size() <= 0){
+		if(F->getName()=="gen_profile" || F->getName()=="profile_dump" || F->size() <= 0){
 			--i;
 			continue;
 		}
@@ -150,7 +150,7 @@ void fdo::CG_Dump()
 }
 
 bool fdo::traverseFunction(Function *F) {
-	if (F->getName()=="nabanita_profile" || F->size()<=0) return false;
+	if (F->getName()=="gen_profile" || F->getName()=="profile_dump"|| F->size()<=0) return false;
 		const char * from=F->getName().data();
 	const char * to;
 	Module *M =F->getParent();
@@ -169,7 +169,7 @@ bool fdo::traverseFunction(Function *F) {
 				Constant * Init_from = ConstantDataArray::getString (II->getContext(),from);
 				Value * To=new GlobalVariable (*M,Init_to->getType(),true,GlobalValue::InternalLinkage,Init_to,"callee");
 				Value * From=new GlobalVariable (*M,Init_from->getType(),true,GlobalValue::InternalLinkage,Init_from,"caller");
-				Constant* profile = M->getOrInsertFunction("nabanita_profile",Type::getVoidTy(M->getContext()),PointerType::get(IntegerType::get(M->getContext(), 8), 0),PointerType::get(IntegerType::get(M->getContext(), 8), 0),NULL);		
+				Constant* profile = M->getOrInsertFunction("gen_profile",Type::getVoidTy(M->getContext()),PointerType::get(IntegerType::get(M->getContext(), 8), 0),PointerType::get(IntegerType::get(M->getContext(), 8), 0),NULL);		
 				Function *CallFn=cast<Function>(profile);	
 				vector<Value*> Args;
 				Args.push_back(CastInst::CreatePointerCast(From,PointerType::get(IntegerType::get(M->getContext(), 8), 0) ,"fromptr",II));
