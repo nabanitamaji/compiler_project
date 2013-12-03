@@ -15,7 +15,7 @@ then
 elif [ $1 = "jpeg" ]
 then
 	opt -load $llvm_lib/Inl.so -ml <jpeg-6a.bc> output.bc
-	lli output.bc -dct int -progressive -opt ./testimg.ppm > jpeg.out
+	#lli output.bc -dct int -progressive -opt ./testimg.ppm > jpeg.out
 
 elif [ $1 = "jpega" ]
 then

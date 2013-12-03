@@ -9,6 +9,8 @@
 #include "llvm/Support/raw_ostream.h"
 #include "llvm/ADT/StringRef.h"
 
+#include "GetFreq.h"
+
 using namespace llvm;
 
 namespace {
@@ -39,7 +41,14 @@ namespace {
 		return InlineCost::getNever();
 	}
 
+       // extern int getcount(const char*filename,const char* from,const char *to);
+
 	InlineCost MyInliner::getInlineCost(CallSite cs) {
+		const char *callerName=  cs.getCaller()->getName().data();
+		const char *calleeName=  cs.getCalledFunction()->getName().data();
+
+		int count = getcount("../tracedump.log",callerName,calleeName);
+		errs()<<"Count "<<count<<"\n";
                 InlineCost iCost1 = alwaysInline(cs);
 		InlineCost iCost2 = ICA->getInlineCost(cs,getInlineThreshold(cs));
 		errs() <<"The value of the icost1 : "<<iCost1.isAlways()<<"\n";
