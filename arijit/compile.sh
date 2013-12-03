@@ -26,7 +26,7 @@ then
 
 elif [ $1 = "mpeg" ]
 then
-	opt -load $llvm_lib/Inl.so -ml <jpeg-6a.bc> output.bc
+	opt -load $llvm_lib/Inl.so -ml <mpeg2dec.bc> output.bc
 	lli output.bc -b  ./input_base_4CIF_96bps.mpg -r -f -o0 ./tmp%d
 
 elif [ $1 = "clean" ]
