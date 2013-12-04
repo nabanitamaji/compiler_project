@@ -1,6 +1,7 @@
 #include<stdio.h>
 #include<string.h>
 #include<malloc.h>
+#include <stdlib.h>
 
 typedef struct edge{
 	char * parent;
@@ -8,7 +9,7 @@ typedef struct edge{
 	int visited;
 	struct edge *next;
 } edge;
-edge * list=NULL;
+static edge * list=NULL;
 
 void profile_dump(){
 	const char* filename="tracedump.log";
@@ -19,8 +20,9 @@ void profile_dump(){
 			fprintf(file,"\n%s %s %d\n",node->parent,node->child,node->visited);
 			node=node->next;
 		}
-	}
+	}	
 }
+
 void gen_profile(const void *s1, const void *s2)
 {
 	const char *from=(char *)s1;
@@ -33,9 +35,10 @@ void gen_profile(const void *s1, const void *s2)
 		node->parent=(char *)malloc(sizeof(char)*strlen(from));
 		strcpy(node->parent,from);
 		node->child=(char *)malloc(sizeof(char)*strlen(to));
-		strcpy(node->child,to);
+		strcpy(node->child,to);		
 		node->visited=1;
 		node->next=NULL;
+		atexit(profile_dump);
 	}
 	else{
 		node=list;
@@ -62,5 +65,5 @@ void gen_profile(const void *s1, const void *s2)
 		}
 		
 	}
-	profile_dump();
+ //       profile_dump();
 }
