@@ -48,8 +48,9 @@ namespace {
                 const char *callerName=  cs.getCaller()->getName().data();
                 const char *calleeName=  cs.getCalledFunction()->getName().data();
 		int frq = freq.getFreq(callerName,calleeName);
-		if(frq > 10) {
-			errs()<<"Function being called more than 30 : "<<callerName<<"  :  "<<calleeName<<"\n";
+		int size = cs.getCalledFunction()->size();
+		if(frq > 30  && size < 30 ) {
+			errs()<<"Function being called more than 30 : "<<callerName<<"  :  "<<calleeName<<" Freq : "<<frq<<" Size : "<<size<<"\n";
 			return InlineCost::getAlways();
 		}
 
