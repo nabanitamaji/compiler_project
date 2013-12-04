@@ -20,6 +20,7 @@ void profile_dump(){
 			fprintf(file,"\n%s %s %d\n",node->parent,node->child,node->visited);
 			node=node->next;
 		}
+		fclose(file);
 	}	
 }
 

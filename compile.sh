@@ -30,8 +30,8 @@ then
 	llvm-link jpeg-6a.bc profilellvm.bc -o combine.bc
 
 	opt -load $llvm_lib/fdo.so -gen <combine.bc> final.bc
-	#lli final.bc -dct int -progressive -opt ./testimg.ppm > img.jpeg
-	lli final.bc -quality 50 ./testimg.ppm > img.jpeg
+	lli final.bc -dct int -progressive -opt ./testimg.ppm > img.jpeg
+	#lli final.bc -quality 50 ./testimg.ppm > img.jpeg
 
 elif [ $1 = "arijit" ]
 then
