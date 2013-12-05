@@ -17,17 +17,22 @@
 using namespace llvm;
 using namespace arijit;
 
+#include <vector>
+#include <algorithm>
+using namespace std;
+
 namespace {
 	class MyInliner:public Inliner {
 		private:
 			InlineCostAnalysis *ICA;
 			InlineCost alwaysInline(CallSite CS);
 		        Freq freq;
+			vector<string> denyfuncs;
+
 		public:			
 			static char ID;
-			void loadDenyFile(const char *filename);
-			vector<string> denyfuncs;
 			MyInliner():Inliner(ID),ICA(0){ loadDenyFile("denyfile.txt");} 	
+		    //    MyInliner():Inliner(ID),ICA(0){} 	
 			virtual InlineCost getInlineCost(CallSite cs);
 			virtual bool runOnSCC(CallGraphSCC &scc);
 			virtual void getAnalysisUsage(AnalysisUsage &AN) const; 
@@ -35,6 +40,7 @@ namespace {
 		private:
 			int getInstrCount(Function *func);
 			InlineCost filterInline(CallSite cs);
+			void loadDenyFile(const char *filename);
 	};
 
 
@@ -88,9 +94,11 @@ namespace {
                 if(callee->hasFnAttribute(Attribute::NoInline) || callee->mayBeOverridden()|| cs.isNoInline()) {
 			return InlineCost::getNever();
 		}
-		if(std::find(denyfuncs.begin(), denyfuncs.end(), calleename)!=denyfuncs.end())
-			return InlineCost::getNever();			
+	
+		if(find(denyfuncs.begin(), denyfuncs.end(), calleename)!=denyfuncs.end())
+		       return InlineCost::getNever();			
 
+		return InlineCost::getAlways();
 		//Now the job of the CallAnalyzer should be implemented
 	}
 
