@@ -104,9 +104,9 @@ namespace {
 
 	bool MyInliner::runOnSCC(CallGraphSCC &scc) {
 		ICA = &getAnalysis<InlineCostAnalysis>();
-		const TargetTransformInfo &TTI = getAnalysis<TargetTransformInfo>();
-		const DataLayout *TD = getAnalysisIfAvailable<DataLayout>();
-		CallAnalyzer CA (TD,*TTI,callee,225);
+		//const TargetTransformInfo &TTI = getAnalysis<TargetTransformInfo>();
+		//const DataLayout *TD = getAnalysisIfAvailable<DataLayout>();
+		//CallAnalyzer CA (TD,*TTI,callee,225);
 		return Inliner::runOnSCC(scc);
 	}
 
