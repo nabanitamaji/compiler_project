@@ -1,8 +1,6 @@
 #include "llvm/Pass.h"
 #include "llvm/IR/Function.h"
 #include "llvm/IR/Module.h"
-#include "llvm/IR/DataLayout.h"
-#include "llvm/Analysis/TargetTransformInfo.h"
 #include "llvm/Analysis/CallGraph.h"
 #include "llvm/Analysis/InlineCost.h"
 #include "llvm/IR/CallingConv.h"
@@ -22,7 +20,7 @@ using namespace arijit;
 using namespace std;
 
 namespace {
-	class MyInliner:public Inliner {
+	class MyInliner:public Inliner{
 		private:
 			InlineCostAnalysis *ICA;
 			InlineCost alwaysInline(CallSite CS);
@@ -81,7 +79,7 @@ namespace {
 		Function *caller=  cs.getCaller();
 		Function *callee = cs.getCalledFunction();
 
-		string calleename=callee->getName().data();
+		string calleename(callee->getName().data());
 			
 		//Never Inline if the Callee does not exists
 		if(!callee) {
@@ -117,7 +115,11 @@ namespace {
 		int instrCount = getInstrCount(cs.getCalledFunction());
 		//errs() <<" Instruction count  : "<<instrCount<<"\n";
 		
-		if(frq > 30  && size< 30 ) {
+		if(frq > 30 && size == 1) {
+			errs()<<"Function being called more than 30 : "<<callerName<<"  :  "<<calleeName<<" Freq : "<<frq<<"instrcount: "<<instrCount<<" Size : "<<size<<"\n";
+			return InlineCost::getAlways();
+		}
+		if(frq > 30  && instrCount< 100 ) {
 			errs()<<"Function being called more than 30 : "<<callerName<<"  :  "<<calleeName<<" Freq : "<<frq<<"instrcount: "<<instrCount<<" Size : "<<size<<"\n";
 			return InlineCost::getAlways();
 		}
@@ -127,15 +129,12 @@ namespace {
 
 	bool MyInliner::runOnSCC(CallGraphSCC &scc) {
 		ICA = &getAnalysis<InlineCostAnalysis>();
-		//const TargetTransformInfo &TTI = getAnalysis<TargetTransformInfo>();
-		//const DataLayout *TD = getAnalysisIfAvailable<DataLayout>();
-		//CallAnalyzer CA (TD,*TTI,callee,225);
 		return Inliner::runOnSCC(scc);
 	}
 
 	void MyInliner::getAnalysisUsage(AnalysisUsage &AU) const {
 		AU.addRequired<InlineCostAnalysis>() ;
-		AU.addRequired<TargetTransformInfo>();
+	      //  AU.addRequired<TargetTransformInfo>();
 		Inliner::getAnalysisUsage(AU);
 	}
 
