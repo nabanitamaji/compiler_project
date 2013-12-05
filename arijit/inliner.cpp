@@ -8,6 +8,7 @@
 #include "llvm/Transforms/IPO/InlinerPass.h"
 #include "llvm/Support/raw_ostream.h"
 #include "llvm/ADT/StringRef.h"
+#include "llvm/Support/InstIterator.h"
 
 #include "freq.h"
 
@@ -26,7 +27,12 @@ namespace {
 			virtual InlineCost getInlineCost(CallSite cs);
 			virtual bool runOnSCC(CallGraphSCC &scc);
 			virtual void getAnalysisUsage(AnalysisUsage &AN) const; 
+
+		private:
+			int getInstrCount(Function *func);
+			InlineCost filterInline(CallSite cs);
 	};
+
 
 
 	InlineCost MyInliner::alwaysInline(CallSite CS) {
@@ -43,33 +49,55 @@ namespace {
 		return InlineCost::getNever();
 	}
 
+	int MyInliner::getInstrCount(Function *func) {
+		int count = 0;
+		for(inst_iterator itr = inst_begin(func) ; itr != inst_end(func); ++itr) {
+			count++;
+		}
+		return count;
+	}
+
+	InlineCost MyInliner::filterInline(CallSite cs) {
+		Function *caller=  cs.getCaller();
+		Function *callee = cs.getCalledFunction();
+		
+		//Never Inline if the Callee does not exists
+		if(!callee) {
+			return InlineCost::getNever();			
+		}
+		//Never Inline if the construct is not proper for inling
+		if(!ICA->isInlineViable(*callee)) {
+			return InlineCost::getNever();
+		}
+                if(callee->hasFnAttribute(Attribute::NoInline) || callee->mayBeOverridden()|| cs.isNoInline()) {
+			return InlineCost::getNever();
+		}
+
+		//Now the job of the CallAnalyzer should be implemented
+	}
+
+
         InlineCost MyInliner::getInlineCost(CallSite cs) {
         
-                const char *callerName=  cs.getCaller()->getName().data();
+		InlineCost filterCost = filterInline(cs);
+		if(filterCost.isNever()) {
+		 	return InlineCost::getNever();
+		}
+
+		const char *callerName=  cs.getCaller()->getName().data();
                 const char *calleeName=  cs.getCalledFunction()->getName().data();
 		int frq = freq.getFreq(callerName,calleeName);
 		int size = cs.getCalledFunction()->size();
+		int instrCount = getInstrCount(cs.getCalledFunction());
+		errs() <<" Instruction count  : "<<instrCount<<"\n";
+		
 		if(frq > 30  && size < 30 ) {
 			errs()<<"Function being called more than 30 : "<<callerName<<"  :  "<<calleeName<<" Freq : "<<frq<<" Size : "<<size<<"\n";
 			return InlineCost::getAlways();
 		}
 
 		return InlineCost::getNever();
-
-
-        	//errs()<<"Count is  : "<<freq.getFreq(callerName,calleeName)<<"\n";
-                //InlineCost iCost1 = alwaysInline(cs);
-                //InlineCost iCost2 = ICA->getInlineCost(cs,getInlineThreshold(cs));
-                //errs() <<"The value of the icost1 : "<<iCost1.isAlways()<<"\n";
-                //errs() <<"The value of the icost2 : "<<iCost2.isAlways()<<"\n";
-        	//if(iCost1.isAlways() && iCost2.isAlways()) {
-        	//	return iCost1;
-        	//} else {
-        	//	return iCost2;
-        	//}
-        	
-        }
-
+	}
        // extern int getcount(const char*filename,const char* from,const char *to);
 
        // InlineCost MyInliner::getInlineCost(CallSite cs) {
