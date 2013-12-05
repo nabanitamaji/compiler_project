@@ -23,7 +23,9 @@ namespace {
 		public:			
 			static char ID;
 			InlineCostAnalysis *ICA;
-			MyInliner():Inliner(ID),ICA(0){} 	
+			void loadDenyFile(const char *filename);
+			vector<string> denyfuncs;
+			MyInliner():Inliner(ID),ICA(0){ loadDenyFile("denyfile.txt");} 	
 			virtual InlineCost getInlineCost(CallSite cs);
 			virtual bool runOnSCC(CallGraphSCC &scc);
 			virtual void getAnalysisUsage(AnalysisUsage &AN) const; 
@@ -34,7 +36,17 @@ namespace {
 	};
 
 
-
+        void MyInliner::loadDenyFile(const char *fileName) {
+                ifstream df;
+                df.open(fileName);
+                if(df.is_open()) {
+                        string line;
+                        while(getline(df,line)) 
+				denyfuncs.push_back(line);
+			df.close();
+		}
+	}
+					
 	InlineCost MyInliner::alwaysInline(CallSite CS) {
 		Function *Callee = CS.getCalledFunction();
 		if(Callee && !Callee->isDeclaration() &&
@@ -60,7 +72,9 @@ namespace {
 	InlineCost MyInliner::filterInline(CallSite cs) {
 		Function *caller=  cs.getCaller();
 		Function *callee = cs.getCalledFunction();
-		
+
+		string calleename=callee->getName().data();
+			
 		//Never Inline if the Callee does not exists
 		if(!callee) {
 			return InlineCost::getNever();			
@@ -72,6 +86,8 @@ namespace {
                 if(callee->hasFnAttribute(Attribute::NoInline) || callee->mayBeOverridden()|| cs.isNoInline()) {
 			return InlineCost::getNever();
 		}
+		if(std::find(denyfuncs.begin(), denyfuncs.end(), calleename)!=denyfuncs.end())
+			return InlineCost::getNever();			
 
 		//Now the job of the CallAnalyzer should be implemented
 	}
@@ -89,9 +105,9 @@ namespace {
 		int frq = freq.getFreq(callerName,calleeName);
 		int size = cs.getCalledFunction()->size();
 		int instrCount = getInstrCount(cs.getCalledFunction());
-		errs() <<" Instruction count  : "<<instrCount<<"\n";
+		//errs() <<" Instruction count  : "<<instrCount<<"\n";
 		
-		if(frq > 30  && size < 30 ) {
+		if(frq > 30  && size < 50 ) {
 			errs()<<"Function being called more than 30 : "<<callerName<<"  :  "<<calleeName<<" Freq : "<<frq<<" Size : "<<size<<"\n";
 			return InlineCost::getAlways();
 		}
