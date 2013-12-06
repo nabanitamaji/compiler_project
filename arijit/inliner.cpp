@@ -93,8 +93,8 @@ namespace {
 			return InlineCost::getNever();
 		}
 	
-		if(find(denyfuncs.begin(), denyfuncs.end(), calleename)!=denyfuncs.end())
-		       return InlineCost::getNever();			
+	       // if(find(denyfuncs.begin(), denyfuncs.end(), calleename)!=denyfuncs.end())
+		//       return InlineCost::getNever();			
 
 		return InlineCost::getAlways();
 		//Now the job of the CallAnalyzer should be implemented
@@ -103,14 +103,16 @@ namespace {
 
         InlineCost MyInliner::getInlineCost(CallSite cs) {
         
-		InlineCost filterCost = filterInline(cs);
-		if(filterCost.isNever()) {
 		 	return InlineCost::getNever();
-		}
+//		InlineCost filterCost = filterInline(cs);
+/*		if(filterCost.isNever()) {
+		 	return InlineCost::getNever();
+		}*/
 
 		const char *callerName=  cs.getCaller()->getName().data();
                 const char *calleeName=  cs.getCalledFunction()->getName().data();
 		int frq = freq.getFreq(callerName,calleeName);
+		errs()<<"frequency: "<<frq<<"\n";
 		int size = cs.getCalledFunction()->size();
 		int instrCount = getInstrCount(cs.getCalledFunction());
 		//errs() <<" Instruction count  : "<<instrCount<<"\n";
@@ -119,7 +121,7 @@ namespace {
 			errs()<<"Function being called more than 30 : "<<callerName<<"  :  "<<calleeName<<" Freq : "<<frq<<"instrcount: "<<instrCount<<" Size : "<<size<<"\n";
 			return InlineCost::getAlways();
 		}
-		if(frq > 30  && instrCount< 100 ) {
+		if(frq > 30 ){// && instrCount< 100 ) {
 			errs()<<"Function being called more than 30 : "<<callerName<<"  :  "<<calleeName<<" Freq : "<<frq<<"instrcount: "<<instrCount<<" Size : "<<size<<"\n";
 			return InlineCost::getAlways();
 		}

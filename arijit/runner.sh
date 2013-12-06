@@ -7,12 +7,8 @@ then
 fi
 #llvm_lib=/home/arijit/Compiler/llvm-1.2.src/Debug+Asserts/lib
 llvm_lib=/home/ari/Compiler/llvm-3.2.src/Debug+Asserts/lib
-if [ $1 == "comp" ]
-then 
-	make
-	opt -load $llvm_lib/Inl.so -ml <jpeg-6a.bc> output.bc
 
-elif [ $1 = "jpeg" ]
+if [ $1 = "jpeg" ]
 then
 	#opt -load $llvm_lib/Inl.so -ml <jpeg-6a.bc> output.bc
 	lli output.bc -dct int -progressive -opt ../testimg.ppm > img.jpeg
@@ -34,6 +30,11 @@ then
 	llvm-dis output.bc 
 	lli output.bc
 
+elif [ $1 = "lua" ]
+then
+	opt -load $llvm_lib/Inl.so -ml <lua.bc> output.bc
+	#lli output.bc arijit.lua
+
 elif [ $1 = "clean" ]
 then 
 	echo "There are certain things to clean"
@@ -41,8 +42,4 @@ then
 	rm output*
 	rm *out*
 
-elif [ $1 = "arijit" ]
-then
-	clang  -emit-llvm -c arijit.cpp -o arijit.bc
-	opt -load $llvm_lib/Inl.so -ml <arijit.bc> output.bc
 fi
