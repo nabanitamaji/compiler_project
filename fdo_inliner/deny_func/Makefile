@@ -1,4 +1,4 @@
-LEVEL=../../../..
+LEVEL=../../../../../
 LIBRARYNAME=denyfunc
 LOADABLE_MODULE=1
 ENABLE_OPTIMIZE=0
