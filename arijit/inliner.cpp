@@ -115,12 +115,12 @@ namespace {
 		int instrCount = getInstrCount(cs.getCalledFunction());
 		//errs() <<" Instruction count  : "<<instrCount<<"\n";
 		
-		if(frq > 30 && size == 1) {
-			errs()<<"Function being called more than 30 : "<<callerName<<"  :  "<<calleeName<<" Freq : "<<frq<<"instrcount: "<<instrCount<<" Size : "<<size<<"\n";
+		if(frq >100 && size == 1) {
+			errs()<<"Function being called more than 30 : "<<callerName<<"  :  "<<calleeName<<" Freq : "<<frq<<" : instrcount: "<<instrCount<<" Size : "<<size<<"\n";
 			return InlineCost::getAlways();
 		}
-		if(frq >30  && instrCount<70 ) {
-			errs()<<"Function being called more than 30 : "<<callerName<<"  :  "<<calleeName<<" Freq : "<<frq<<"instrcount: "<<instrCount<<" Size : "<<size<<"\n";
+		if(frq >100  && instrCount<50 ) {
+			errs()<<"Function being called more than 30 : "<<callerName<<"  :  "<<calleeName<<" Freq : "<<frq<<" : instrcount: "<<instrCount<<" Size : "<<size<<"\n";
 			return InlineCost::getAlways();
 		}
 

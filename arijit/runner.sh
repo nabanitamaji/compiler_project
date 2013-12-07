@@ -32,8 +32,8 @@ then
 
 elif [ $1 = "lua" ]
 then
-	#opt -load $llvm_lib/Inl.so -ml <lua.bc> output.bc
-	lli output.bc src.lua
+	opt -load $llvm_lib/Inl.so -ml <lua.bc> output.bc
+	#lli output.bc src.lua
 
 elif [ $1 = "clean" ]
 then 
