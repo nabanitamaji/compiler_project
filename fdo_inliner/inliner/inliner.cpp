@@ -29,6 +29,7 @@ namespace {
 
 		public:			
 			static char ID;
+			static int count;
 			MyInliner():Inliner(ID),ICA(0){ loadDenyFile("denyfile.txt");} 	
 		    //    MyInliner():Inliner(ID),ICA(0){} 	
 			virtual InlineCost getInlineCost(CallSite cs);
@@ -103,10 +104,10 @@ namespace {
 
         InlineCost MyInliner::getInlineCost(CallSite cs) {
         
-	/*	InlineCost filterCost = filterInline(cs);
+		InlineCost filterCost = filterInline(cs);
 		if(filterCost.isNever()) {
 		 	return InlineCost::getNever();
-		}*/
+		}
 
 		const char *callerName=  cs.getCaller()->getName().data();
                 const char *calleeName=  cs.getCalledFunction()->getName().data();
@@ -115,12 +116,14 @@ namespace {
 		int instrCount = getInstrCount(cs.getCalledFunction());
 		//errs() <<" Instruction count  : "<<instrCount<<"\n";
 		
-		if(frq>0 && size == 1) {
-		errs()<<"Function with size 1 : "<<callerName<<"  :  "<<calleeName<<" Freq : "<<frq<<"instrcount: "<<instrCount<<" Size : "<<size<<"\n";
+		if(frq >100 && size == 1 && count < 5) {
+			++count;
+			errs()<<"Function being called more than 30 : "<<callerName<<"  :  "<<calleeName<<" Freq : "<<frq<<" : instrcount: "<<instrCount<<" Size : "<<size<<"\n";
 			return InlineCost::getAlways();
 		}
-		if(frq >0 ){ //&& size<10 ) {
-			errs()<<"Function being inlined : "<<callerName<<"  :  "<<calleeName<<" Freq : "<<frq<<"instrcount: "<<instrCount<<" Size : "<<size<<"\n";
+		if(frq >100  && instrCount<50 && count < 5 ) {
+			++count;
+			errs()<<"Function being called more than 30 : "<<callerName<<"  :  "<<calleeName<<" Freq : "<<frq<<" : instrcount: "<<instrCount<<" Size : "<<size<<"\n";
 			return InlineCost::getAlways();
 		}
 
@@ -141,4 +144,5 @@ namespace {
 }
 
 char MyInliner::ID = 0;
+int MyInliner::count  = 0 ;
 static RegisterPass<MyInliner> X("ml","This is a custom inliner",false,false);
