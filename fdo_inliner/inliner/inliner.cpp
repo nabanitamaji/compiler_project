@@ -9,16 +9,19 @@
 #include "llvm/Support/raw_ostream.h"
 #include "llvm/ADT/StringRef.h"
 #include "llvm/Support/InstIterator.h"
-
+#include "llvm/Support/CommandLine.h"
 #include "freq.h"
 
 using namespace llvm;
-using namespace arijit;
+using namespace freq;
 
 #include <vector>
 #include <algorithm>
 using namespace std;
-
+static cl::opt<unsigned>
+ft("ft", cl::init(0), cl::Hidden,cl::desc("frequency of call graph edge as threshold"));
+static cl::opt<unsigned>
+ct("ct", cl::init(0), cl::Hidden,cl::desc("threshold of instruction count"));
 namespace {
 	class MyInliner:public Inliner{
 		private:
@@ -29,7 +32,6 @@ namespace {
 
 		public:			
 			static char ID;
-			static int count;
 			MyInliner():Inliner(ID),ICA(0){ loadDenyFile("denyfile.txt");} 	
 		    //    MyInliner():Inliner(ID),ICA(0){} 	
 			virtual InlineCost getInlineCost(CallSite cs);
@@ -116,14 +118,12 @@ namespace {
 		int instrCount = getInstrCount(cs.getCalledFunction());
 		//errs() <<" Instruction count  : "<<instrCount<<"\n";
 		
-		if(frq >100 && size == 1 && count < 5) {
-			++count;
-			errs()<<"Function being called more than 30 : "<<callerName<<"  :  "<<calleeName<<" Freq : "<<frq<<" : instrcount: "<<instrCount<<" Size : "<<size<<"\n";
-			return InlineCost::getAlways();
-		}
-		if(frq >100  && instrCount<50 && count < 5 ) {
-			++count;
-			errs()<<"Function being called more than 30 : "<<callerName<<"  :  "<<calleeName<<" Freq : "<<frq<<" : instrcount: "<<instrCount<<" Size : "<<size<<"\n";
+	//	if(frq >0 && size == 1) {
+	//		errs()<<"Function with size 1 : "<<callerName<<"  :  "<<calleeName<<" Freq : "<<frq<<" : instrcount: "<<instrCount<<" Size : "<<size<<"\n";
+	//		return InlineCost::getAlways();
+	//	}
+		if(frq >ft  && instrCount<ct ) {
+			errs()<<"Function with freq > "<<ft<<" and instruction count "<<ct<<" : "<<callerName<<"  :  "<<calleeName<<" Freq : "<<frq<<" : instrcount: "<<instrCount<<" Size : "<<size<<"\n";
 			return InlineCost::getAlways();
 		}
 
@@ -144,5 +144,4 @@ namespace {
 }
 
 char MyInliner::ID = 0;
-int MyInliner::count  = 0 ;
 static RegisterPass<MyInliner> X("ml","This is a custom inliner",false,false);
