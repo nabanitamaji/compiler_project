@@ -9,7 +9,7 @@
 #include <sstream>
 using namespace std;
 
-namespace arijit {
+namespace freq {
 	class Freq {
 		public:
 			map<string,int> trace;

@@ -1,6 +1,6 @@
 #include "freq.h"
 
-namespace arijit {
+namespace freq {
 	void Freq::readFile(const char *fileName) {
 		ifstream feedBack;
 		feedBack.open(fileName);
@@ -34,7 +34,7 @@ namespace arijit {
 
 	int Freq::getFreq(const char *caller,const  char *callee) {
 		if(trace.size() == 0) {
-			readFile("../tracedump.log");
+			readFile("tracedump.log");
 		}
 		string callerName(caller);
 		string calleeName(callee);
