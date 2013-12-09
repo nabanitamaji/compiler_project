@@ -1,5 +1,4 @@
 #set -x 
-export llvm_lib=/home/nabanita/llvm/Debug+Asserts/lib
 ft=$1
 shift
 ct=$1

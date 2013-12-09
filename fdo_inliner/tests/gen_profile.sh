@@ -1,5 +1,4 @@
 #set -x 
-export llvm_lib=/home/nabanita/llvm/Debug+Asserts/lib
 orig_bc=$1
 file=${orig_bc%%.*}
 tmp1=$file"_combined.bc"
