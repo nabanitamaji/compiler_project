@@ -1,3 +1,10 @@
-time lli lua_inlined.bc src.lua>/dev/null
-time lli lua.bc src.lua>/dev/null
-
+set -x
+args=$#
+ft=$1
+ct=$2
+echo $args
+shift
+shift
+./gen_profile.sh $@
+./loop_detech.sh $1
+./inline.sh $ft $ct $@
